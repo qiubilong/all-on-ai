@@ -1,12 +1,23 @@
-# 运行方式：pip install openai
-# 将 your-api-key 替换为你的 DeepSeek API Key，保存为 agent.py 后运行：python agent.py
-
+# 运行方式：pip install openai python-dotenv
+# 将 .env.example 复制为 .env 并填入 API Key，然后运行：python agentDemo1.py
+import os
+import sys
+from dotenv import load_dotenv
 from openai import OpenAI
 
+sys.stdout.reconfigure(line_buffering=True)
+
+# 从 .env 文件加载环境变量，避免把 API Key 硬编码进代码（防止随 git 提交泄露）
+load_dotenv()
+
 client = OpenAI(
-    base_url="https://api.deepseek.com",
-    api_key="sk-9c041ae221654bd6a90ab15c3e58d189"
+    # base_url="https://api.deepseek.com",
+    base_url="https://open.bigmodel.cn/api/paas/v4/",
+    api_key=os.getenv("API_KEY"),
 )
+
+if not client.api_key:
+    raise RuntimeError("未读取到 API_KEY，请将 .env.example 复制为 .env 并填入你的 API Key")
 
 messages = []
 
@@ -25,7 +36,7 @@ while True:
     messages.append({"role": "user", "content": user_input})
 
     response = client.chat.completions.create(
-        model="deepseek-v4-flash",
+        model="glm-5.3",
         messages=messages
     )
 
